@@ -1,0 +1,367 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- ALTERE AQUI: título da aba do navegador -->
+<title>A Bacia Amazônica</title>
+<style>
+/* =====================================================
+   1. CORES E FONTES — ALTERE AQUI A PALETA DO SITE
+   ===================================================== */
+:root{
+  --verde:#0b4644;        /* azul-esverdeado mais profundo */
+  --verde-medio:#c98a2e;  /* âmbar discreto: numeração e detalhes */
+  --verde-suave:#e4f0ec;  /* verde-água suave: cartões e divisórias */
+  --borda:#cfe1da;
+  --fundo:#fbf9f3; --card:#fff; --texto:#1f2b2a; --apoio:#52625f; --sobre:#fff;
+  --fonte:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  --fonte-ui:system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  --fonte-titulo:'Palatino Linotype',Palatino,'Book Antiqua',Georgia,serif;
+  --raio:6px; --sombra:0 2px 10px rgba(13,60,58,.08);
+  color-scheme:light;
+}
+
+/* =====================================================
+   2. ESTILOS (normalmente não é preciso editar)
+   ===================================================== */
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{font:1.04rem/1.75 var(--fonte);background:var(--fundo);color:var(--texto);overflow-x:hidden}
+img{display:block;max-width:100%}
+h1,h2,h3{line-height:1.2;font-family:var(--fonte-titulo)}
+:focus-visible{outline:3px solid var(--verde-medio);outline-offset:2px}
+#progresso{position:fixed;top:0;left:0;height:4px;width:0;background:var(--verde-medio);z-index:90}
+/* barra superior: título à esquerda, ícone de três linhas à direita */
+#barra{position:fixed;top:0;left:0;right:0;height:60px;display:flex;flex-direction:row-reverse;justify-content:space-between;align-items:center;padding:0 14px;background:var(--verde);color:#fff;font:600 .95rem var(--fonte-ui);letter-spacing:.04em;z-index:70}
+#burger{width:42px;height:42px;border:1px solid rgba(255,255,255,.4);border-radius:var(--raio);background:transparent;cursor:pointer;display:grid;place-content:center;gap:5px}
+#burger i{display:block;width:20px;height:2px;background:#fff;border-radius:2px}
+#menu{position:fixed;top:60px;bottom:0;right:0;width:320px;max-width:88vw;padding:18px 14px 28px;overflow:auto;background:var(--card);border-left:4px solid var(--verde-medio);box-shadow:var(--sombra);font-family:var(--fonte-ui);z-index:80;transform:translateX(105%);transition:transform .3s;visibility:hidden}
+#menu.aberto{transform:none;visibility:visible}
+#links a{display:block;padding:10px 12px;margin-bottom:2px;border-radius:var(--raio);color:var(--apoio);font-size:.92rem;line-height:1.4;text-decoration:none}
+#links a:hover{background:var(--verde-suave)}
+#links a.ativo{background:var(--verde);color:#fff;font-weight:600}
+#links b{margin-right:.5em;opacity:.7}
+#veu{display:none;position:fixed;inset:60px 0 0;background:rgba(8,35,34,.4);z-index:75}
+#veu.on{display:block}
+#subir{position:fixed;right:18px;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);width:46px;height:46px;border:0;border-radius:var(--raio);background:var(--verde-medio);color:#fff;font-size:1.2rem;cursor:pointer;box-shadow:var(--sombra);opacity:0;pointer-events:none;transition:opacity .3s;z-index:60}
+#subir.on{opacity:1;pointer-events:auto}
+main{padding-top:60px}
+
+/* CAPA COM DEGRADÊ NA IMAGEM DE FUNDO */
+.heroband{
+  position:relative;
+  background-color: var(--verde);
+  background-image: linear-gradient(rgba(11, 70, 68, 0.82), rgba(11, 70, 68, 0.95)), url('vista.jpg');
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center;max-width:1160px;margin:0 auto;padding:56px clamp(20px,5vw,60px) 40px;position:relative;z-index:2}
+.hero.full{grid-template-columns:1fr;max-width:800px;text-align:center;}
+.hero.full .btn{margin-left:auto;margin-right:auto;}
+.tag{display:inline-block;margin-bottom:16px;padding:5px 12px;border:1px solid var(--verde-medio);color:#f2c883;font:600 .75rem var(--fonte-ui);letter-spacing:.14em;text-transform:uppercase}
+.hero h1{font-size:clamp(2.2rem,5vw,3.8rem);margin-bottom:16px;color:#fff}
+.hero .sub{font-size:1.15rem;font-weight:600}.hero .desc{opacity:.9}
+.hero figcaption{color:#cfe6e1}
+.hero .moldura{box-shadow:12px 12px 0 var(--verde-medio)}
+.btn{display:inline-block;margin-top:26px;padding:13px 24px;border-radius:var(--raio);background:var(--verde-medio);color:#1b1608;font:700 .95rem var(--fonte-ui);text-decoration:none}
+.btn:hover{opacity:.9}
+.onda{display:block;width:100%;height:46px;color:var(--verde);margin-top:-1px}
+
+.cap{max-width:1000px;margin:0 auto;padding:72px clamp(20px,5vw,60px) 8px}
+.cap h2{font-size:clamp(1.6rem,3.2vw,2.3rem);color:var(--verde);margin-bottom:12px;padding-bottom:12px;border-bottom:2px solid var(--verde-suave)}
+.cap h2 small{display:block;margin-bottom:4px;font:700 3.2rem/1 var(--fonte-titulo);color:transparent;-webkit-text-stroke:1.5px var(--verde-medio);letter-spacing:.02em}
+.cap h3.sub2{margin:8px 0 14px;font:700 1.05rem var(--fonte-ui);color:var(--verde);padding-left:12px;border-left:4px solid var(--verde-medio)}
+.bloco{margin:30px 0}
+.texto p{max-width:66ch;margin-bottom:1em}
+.sep{display:block;width:90px;margin:44px auto 0;color:var(--verde-medio);opacity:.8}
+.moldura{border-radius:var(--raio);overflow:hidden;background:var(--verde-suave);box-shadow:var(--sombra)}
+.moldura img{width:100%;height:100%;object-fit:cover;cursor:zoom-in}
+
+/* ADAPTAÇÃO LIVRE: Mantém a imagem inteira e adapta a altura proporcionalmente ao tamanho real */
+.moldura.livre {
+  aspect-ratio: auto !important;
+  height: auto !important;
+  background-color: var(--verde-suave);
+}
+.moldura.livre img {
+  object-fit: contain !important;
+  height: auto !important;
+  max-height: 600px; /* Limita para não ficar gigante, mas exibe inteira */
+  margin: 0 auto;
+}
+
+.ph{display:grid;place-items:center;min-height:180px;height:100%;padding:16px;border:2px dashed var(--verde);border-radius:var(--raio);color:var(--apoio);font:500 .85rem var(--fonte-ui);text-align:center;word-break:break-all}
+.alto{aspect-ratio:4/5}.largo{aspect-ratio:21/9}.p43{aspect-ratio:4/3}
+figcaption{padding:8px 2px 0;color:var(--apoio);font:.82rem var(--fonte-ui)}
+
+/* Layout dinâmico para quando não houver imagem */
+.dividido{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+.dividido.full{grid-template-columns:1fr}
+.dividido.inv figure{order:2}.dividido .moldura{aspect-ratio:4/3}
+
+.grade{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.card{padding:20px 22px;background:var(--card);border:1px solid var(--borda);border-left:6px solid var(--verde);border-radius:var(--raio);box-shadow:var(--sombra)}
+.card:nth-child(even){border-left-color:var(--verde-medio)}
+.card h3{margin-bottom:6px;font-size:1.1rem;color:var(--verde)}
+.card p{color:var(--apoio);font-size:.96rem}
+.card.num{background:var(--verde);border-color:var(--verde);border-left-width:1px;text-align:center}
+.card.num h3{font-size:2.2rem;color:#f2c883}.card.num p{color:#e3f1ee}
+.destaque{padding:22px 26px;background:var(--verde-suave);border-left:6px solid var(--verde-medio);border-radius:var(--raio)}
+.destaque strong{display:block;color:var(--verde);font-family:var(--fonte-ui)}
+/* passos em linha do tempo */
+.passos{counter-reset:p;display:grid;gap:18px;list-style:none;padding:0;max-width:70ch;position:relative}
+.passos::before{content:"";position:absolute;left:16px;top:10px;bottom:10px;width:2px;background:var(--borda)}
+.passos li{counter-increment:p;display:flex;gap:16px;align-items:flex-start;position:relative}
+.passos li::before{content:counter(p);flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:var(--raio);background:var(--verde-medio);color:#1b1608;font:700 .95rem var(--fonte-ui)}
+.tabela{overflow-x:auto;border-radius:var(--raio);box-shadow:var(--sombra)}
+table{width:100%;border-collapse:collapse;background:var(--card);font:.93rem/1.6 var(--fonte-ui)}
+th,td{padding:13px 16px;text-align:left;border-bottom:1px solid var(--borda);vertical-align:top}
+tr:nth-child(even) td{background:#f4f9f7}
+th{background:var(--verde);color:var(--sobre)}td:first-child{font-weight:600;min-width:140px}
+/* galerias */
+.galeria{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.galeria.geral{grid-template-columns:1fr;max-width:760px;margin:0 auto}
+.galeria figure{background:var(--card);border:1px solid var(--borda);border-bottom:4px solid var(--verde-medio);border-radius:var(--raio);box-shadow:var(--sombra);padding:8px}
+.galeria .moldura{box-shadow:none;aspect-ratio:4/3}
+.galeria figcaption{padding:10px 4px 4px}
+.galeria figcaption b{display:block;color:var(--verde);font-size:.9rem}
+/* lightbox */
+#lb{display:none;position:fixed;inset:0;background:rgba(6,30,29,.94);z-index:100;align-items:center;justify-content:center;flex-direction:column;padding:56px 16px 24px;color:#fff;font-family:var(--fonte-ui)}
+#lb.on{display:flex}
+#lb img{max-width:100%;max-height:78vh;object-fit:contain;border-radius:6px}
+#lbc{margin-top:12px;max-width:70ch;text-align:center;font-size:.9rem}
+#lb button{position:absolute;border:0;background:rgba(255,255,255,.15);color:#fff;font-size:1.6rem;width:46px;height:46px;border-radius:var(--raio);cursor:pointer}
+#lbx{top:12px;right:12px}#lbp{left:10px;top:50%}#lbn{right:10px;top:50%}
+
+/* RODAPÉ MAIS ESCURO */
+footer{margin-top:80px;padding:44px clamp(20px,5vw,60px) calc(env(safe-area-inset-bottom,0px) + 40px);background:#072d2c;color:#e1ece8;border-top:6px solid var(--verde-medio);font:.93rem/1.7 var(--fonte-ui)}
+.rod{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:22px 32px}
+.rod h2{grid-column:1/-1;font:700 1.3rem var(--fonte-titulo);color:#fff}
+.rod h4{margin-bottom:2px;color:#8abeb8;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase}
+.rod .todo{grid-column:1/-1}
+.rod ul{list-style:none;padding:0;display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.rod li{padding:5px 14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;border-radius:99px}
+.rod .fim{padding-top:16px;border-top:1px solid rgba(255,255,255,0.15);text-align:center;color:#b1c7c2}
+.grupo{max-width:820px;margin:36px auto 0}
+.grupo .moldura{aspect-ratio:3/2;border:6px solid rgba(255,255,255,0.15)}.grupo figcaption{text-align:center;color:#b1c7c2}
+
+@media(max-width:900px){
+  html{scroll-padding-top:76px}
+  .hero{grid-template-columns:1fr;gap:28px;padding-top:36px}
+  .hero .moldura{box-shadow:8px 8px 0 var(--verde-medio)}
+  .alto{aspect-ratio:16/10}.dividido{grid-template-columns:1fr}.dividido.inv figure{order:0}
+  .cap{padding-top:56px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div id="progresso"></div>
+<div id="barra"><button id="burger" aria-label="Abrir ou fechar o menu" aria-expanded="false" aria-controls="menu"><i></i><i></i><i></i></button><span>Bacia Amazônica</span></div>
+<div id="veu"></div>
+<nav id="menu" aria-label="Navegação por tópicos"><div id="links"></div></nav>
+
+<main>
+<!-- CAPA -->
+<div class="heroband">
+<header class="hero" id="topo">
+  <div>
+    <span class="tag">Trabalho de Geografia</span>
+    <h1>A Bacia Amazônica</h1>
+    <p class="sub">Instituto Federal do Pará · Campus Óbidos</p>
+    <p class="desc">Curso de Florestas</p>
+    <a class="btn" href="#apresentacao">Veja Mais ↓</a>
+  </div>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const capImg = document.getElementById("capa-img");
+      if(!capImg || !capImg.getAttribute("src") || capImg.getAttribute("src").trim() === "") {
+        document.getElementById("topo").classList.add("full");
+        if(capImg && capImg.closest("figure")) capImg.closest("figure").style.display = "none";
+      }
+    });
+  </script>
+  <figure><div class="moldura alto"><img id="capa-img" src="" alt="Bacia Amazônica"></div><figcaption>[Legenda editável] · Crédito: [fonte]</figcaption></figure>
+</header>
+</div>
+<svg class="onda" viewBox="0 0 1200 46" preserveAspectRatio="none" aria-hidden="true"><path fill="currentColor" d="M0 0H1200V24C1050 46 900 4 750 24S450 46 300 24 150 4 0 24Z"/></svg>
+
+<div id="secoes"></div>
+
+</main>
+
+<!-- IDENTIFICAÇÃO ACADÊMICA E INTEGRANTES -->
+<footer id="identificacao">
+  <div class="rod">
+    <h2><small style="display:block;font:600 .8rem var(--fonte-ui);letter-spacing:.14em;color:var(--verde-medio)">-</small>Identificação Acadêmica e Integrantes</h2>
+    <div><h4>Instituição</h4>Instituto Federal do Pará (IFPA)</div>
+    <div><h4>Campus</h4>Óbidos</div>
+    <div><h4>Curso</h4>Florestas</div>
+    <div><h4>Disciplina</h4>Geografia</div>
+    <div><h4>Professor(a)</h4>[nome do(a) professor(a)]</div>
+    <div class="todo"><h4>Integrantes</h4>
+      <ul>
+        <li>Paulo</li><li>Ana Luiza</li><li>Kaique</li><li>Marcio Ruan</li><li>Italo Darildo</li>
+      </ul>
+    </div>
+    <p class="fim todo">Óbidos – Pará · 2026</p>
+  </div>
+  <figure class="grupo">
+    <div class="moldura livre"><img src="imagens/grupo-com-professor.jpg" alt="Grupo com o professor" onerror="this.outerHTML='<div class=ph>Foto do grupo com o professor · imagens/grupo-com-professor.jpg</div>'"></div>
+    <figcaption>Integrantes do grupo com o(a) professor(a) · Crédito: Arquivo da Turma</figcaption>
+  </figure>
+</footer>
+
+<button id="subir" aria-label="Voltar ao topo">↑</button>
+<div id="lb" role="dialog" aria-modal="true" aria-label="Imagem ampliada"><button id="lbx" aria-label="Fechar">×</button><button id="lbp" aria-label="Anterior">‹</button><img alt=""><p id="lbc"></p><button id="lbn" aria-label="Próxima">›</button></div>
+
+<script>
+/* ===========================================================
+   CONTEÚDO — Seções e Blocos da Página
+   =========================================================== */
+const LEG = "[Legenda editável] · Crédito: [fonte]";
+
+const SECOES = [
+ /* 1 — APRESENTAÇÃO E INTRODUÇÃO */
+ { id:"apresentacao", menu:"Apresentação e introdução", titulo:"Apresentação e Introdução à Bacia Amazônica", blocos:[
+   {tipo:"dividido", img:"flo.jpg", livre:true, legenda:'Vista panorâmica da Floresta Amazônica', paragrafos:[
+     "Este trabalho de Geografia, desenvolvido pela turma do curso de Florestas do Instituto Federal do Pará (Campus Óbidos), explora a Bacia Amazônica, reconhecida como a maior bacia hidrográfica do mundo.",
+     "Nas próximas seções, vamos detalhar a imensa extensão desse território, sua localização geográfica, o grandioso rio principal, os afluentes que o alimentam, além de toda a riqueza da biodiversidade e a importância desse sistema para o clima e para as comunidades locais."]},
+   {tipo:"galeria", itens:[]}]},
+
+ /* 2 — EXTENSÃO */
+ { id:"extensao", menu:"Extensão", titulo:"Extensão da Bacia", blocos:[
+   {tipo:"dividido", lado:"direita", img:"images.png", livre:true, legenda:'Delimitação da Bacia do Rio Amazonas na América do Sul', paragrafos:[
+     "Para a gente ter uma ideia do tamanho, a Bacia Amazônica é simplesmente gigante: ela cobre cerca de 7 milhões de quilômetros quadrados, o que corresponde a quase 40% de toda a América do Sul.",
+     "Só no Brasil, essa área ocupa perto de 45% do território nacional, somando cerca de 3,89 milhões de quilômetros quadrados cheios de vida e água."]},
+   {tipo:"numeros", itens:[["7 mi km²","de área total da bacia"],["≈ 40%","de toda a América do Sul"],["45%","do território nacional (3,89 milhões de km²)"]]},
+   {tipo:"destaque", rotulo:"Por que isso importa?", texto:"Com toda essa proporção colossal, a bacia drena uma quantidade impressionante de água e dita o ritmo de boa parte do clima e da ecologia do continente."}]},
+
+ /* 3 — LOCALIZAÇÃO E MAQUETE */
+ { id:"localizacao", menu:"Localização", titulo:"Onde ela se Localiza e Representação em Maquete", blocos:[
+   {tipo:"dividido", img:"", legenda:'', paragrafos:[
+     "A bacia não se restringe ao nosso país. Ela se espalha por nove territórios sul-americanos ao todo, conectando nações e culturas através das águas."]},
+   {tipo:"cards", itens:[
+     ["Países abrangidos","Além do Brasil, estende-se por Peru, Bolívia, Colômbia, Equador, Venezuela, Guiana, Guiana Francesa e Suriname."],
+     ["Nascente principal","Tem seu berço nas altas montanhas da Cordilheira dos Andes, no Peru."],
+     ["Destino final","Suas águas desaguam no Oceano Atlântico, bem na região norte entre o Amapá, o Pará e a imensa Ilha de Marajó."]]},
+   {tipo:"subtitulo", texto:"Maquete"},
+   {tipo:"cards", itens:[
+     ["Ideia da Maquete","[Descreva a maquete construída pelo grupo: o que ela representa na prática.]"]]},
+   {tipo:"galeria", geral:true, itens:[["imagens/maquete-geral.jpg","Fotografia geral da maquete do projeto","Arquivo do Grupo"]]}
+]},
+
+ /* 4 — RIO PRINCIPAL */
+ { id:"rio", menu:"Rio principal", titulo:"O Rio Amazonas", blocos:[
+   {tipo:"banner", img:"ima1.jpg", livre:true, legenda:'Trecho navegável do Rio Amazonas'},
+   {tipo:"texto", paragrafos:["O Rio Amazonas é o coração pulsante de toda essa rede hidrográfica, acumulando marcas impressionantes."]},
+   {tipo:"cards", itens:[
+     ["Comprimento","Estima-se que tenha entre 6.400 e 7.000 quilômetros de extensão total."],
+     ["Gigante em volume","Sozinho, responde por 15% a 20% de toda a água doce que os rios do mundo despejam nos oceanos."],
+     ["Países no percurso","Cruza três nações principais: Peru, Colômbia e Brasil."],
+     ["Pororoca","Um fenômeno incrível onde a força da maré do oceano empurra a água salgada rio acima por quilômetros."],
+     ["Encontro das Águas","O famoso trecho onde os rios Solimões e Negro correm lado a lado sem misturar suas águas por quilômetros."]]}]},
+
+ /* 5 — RIOS AFLUENTES */
+ { id:"afluentes", menu:"Rios afluentes", titulo:"Os Rios Afluentes", blocos:[
+   {tipo:"dividido", lado:"direita", img:"imag.jpg", livre:true, legenda:"Confluência e principais afluentes da bacia", paragrafos:[
+     "Um rio afluente é aquele que despeja suas águas em um rio maior. Na Amazônia, essa rede de contribuições é gigantesca e vital para manter o volume e os nutrientes dos rios principais."]},
+   {tipo:"cards", itens:[
+     ["Quantidade absurda","A bacia conta com cerca de 1.100 rios afluentes abastecendo o Amazonas."],
+     ["Grandes nomes","Destacam-se rios colossais como o Madeira, o Negro, o Tapajós, o Xingu e o Purus."],
+     ["Distribuição","Esses grandes braços vêm tanto do norte quanto do sul, drenando florestas inteiras."]]}]},
+
+ /* 6 — BIODIVERSIDADE */
+ { id:"biodiversidade", menu:"Biodiversidade", titulo:"A Riqueza da Biodiversidade", blocos:[
+   {tipo:"dividido", img:"onça.jpg", livre:true, legenda:"Fauna típica da região amazônica", paragrafos:[
+     "Falar da Amazônia é falar do maior santuário de vida do planeta. A região abriga sozinha cerca de 10% de todas as espécies de plantas e animais conhecidas na Terra."]},
+   {tipo:"texto", paragrafos:["Para termos uma noção numérica dessa riqueza biológica:"]},
+   {tipo:"numeros", itens:[["+ de 40.000","espécies de plantas catalogadas"],["5.500 a 6.000","espécies de vertebrados (peixes, aves, mamíferos)"],["+ de 100.000","espécies de insetos e invertebrados"]]},
+   {tipo:"destaque", rotulo:"Nota de Campo", texto:"Muitas espécies descobertas por pesquisadores e ribeirinhos ainda guardam segredos valiosos para a ciência e para o manejo florestal sustentável."}]},
+
+ /* 7 — IMPORTÂNCIA CLIMÁTICA */
+ { id:"clima", menu:"Importância climática", titulo:"O Papel no Clima", blocos:[
+   {tipo:"banner", img:"sistema.png", livre:true, legenda:"Esquema de fluxos aéreos (rios voadores) que distribuem chuvas por toda a América do Sul"},
+   {tipo:"texto", paragrafos:["A floresta e a bacia funcionam juntas como um sistema de ar-condicionado e bomba d'água natural para o continente sul-americano."]},
+   {tipo:"cards", itens:[
+     ["Regulação térmica","Ajuda a amenizar o calor extremo por meio da evapotranspiração constante das árvores."],
+     ["Rios Voadores","Gera massas de umidade que viajam pelos ventos e abastecem de chuva regiões distantes do Brasil."],
+     ["Estoque de carbono","Armazena toneladas de carbono na biomassa e no solo, ajudando a segurar o aquecimento global."]]}]},
+
+ /* 8 — IMPORTÂNCIA SOCIOECONÔMICA */
+ { id:"socioeconomica", menu:"Importância socioeconômica", titulo:"Importância Socioeconômica", blocos:[
+   {tipo:"dividido", lado:"direita", img:"i8.jpg", livre:true, legenda:'Moradia e subsistência em comunidade ribeirinha', paragrafos:[
+     "Para quem vive na região, os rios são as estradas de verdade. A bacia sustenta a economia e o dia a dia das comunidades locais."]},
+   {tipo:"cards", itens:[
+     ["Pesca e sustento","Garante a segurança alimentar e a renda de milhares de famílias ribeirinhas através da pesca."],
+     ["Bioeconomia da floresta","Movimenta o extrativismo consciente de produtos como açaí, castanha-do-brasil e óleos naturais."],
+     ["Energia limpa","Fornece potencial hidrelétrico importante, embora traga desafios socioambientais complexos."]]}]}
+];
+
+/* ===== COMPONENTES (com suporte a exibição livre e proporcional de imagens) ===== */
+const L=(a,f)=>a.map(f).join(""), $=s=>document.querySelector(s);
+const fig=(s,leg="",c="")=>`<figure><div class="moldura ${c}"><img src="${s}" alt="${leg.split(' · ')[0]}" loading="lazy" onerror="this.outerHTML='<div class=ph>'+this.getAttribute('src')+'</div>'"></div>${leg?`<figcaption>${leg}</figcaption>`:""}</figure>`;
+const COMP={
+ texto:b=>`<div class="texto">${L(b.paragrafos,p=>`<p>${p}</p>`)}</div>`,
+ dividido:b=>{
+   if(!b.img || b.img.trim() === "") {
+     return `<div class="dividido full">${COMP.texto(b)}</div>`;
+   }
+   return `<div class="dividido${b.lado=="direita"?" inv":""}">${fig(b.img,b.legenda, b.livre ? "livre" : "")}${COMP.texto(b)}</div>`;
+ },
+ banner:b=>{
+   if(!b.img || b.img.trim() === "") return "";
+   return fig(b.img,b.legenda, b.livre ? "livre" : "largo");
+ },
+ cards:b=>`<div class="grade">${L(b.itens,i=>`<article class="card"><h3>${i[0]}</h3><p>${i[1]}</p></article>`)}</div>`,
+ numeros:b=>`<div class="grade">${L(b.itens,i=>`<article class="card num"><h3>${i[0]}</h3><p>${i[1]}</p></article>`)}</div>`,
+ tabela:b=>`<div class="tabela"><table><thead><tr>${L(b.cab,c=>`<th>${c}</th>`)}</tr></thead><tbody>${L(b.linhas,l=>`<tr>${L(l,c=>`<td>${c}</td>`)}</tr>`)}</tbody></table></div>`,
+ passos:b=>`<ol class="passos">${L(b.itens,i=>`<li>${i}</li>`)}</ol>`,
+ destaque:b=>`<aside class="destaque"><strong>${b.rotulo}</strong>${b.texto}</aside>`,
+ subtitulo:b=>`<h3 class="sub2">${b.texto}</h3>`,
+ galeria:b=>`<div class="galeria${b.geral?" geral":""}">${L(b.itens,i=>`<figure><div class="moldura livre"><img src="${i[0]}" alt="${i[1]}" loading="lazy" onerror="this.outerHTML='<div class=ph>'+this.getAttribute('src')+'</div>'"></div><figcaption><b>${i[1]}</b>${i[2]}</figcaption></figure>`)}</div>`
+};
+const SEP=`<svg class="sep" viewBox="0 0 520 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M0 12C43-2 87-2 130 12S217 26 260 12 347-2 390 12 477 26 520 12"/></svg>`;
+const num=i=>String(i+1).padStart(2,"0");
+$("#secoes").innerHTML=SECOES.map((s,i)=>`<section class="cap" id="${s.id}"><h2><small>${num(i)}</small>${s.titulo}</h2>${L(s.blocos,b=>`<div class="bloco">${COMP[b.tipo](b)}</div>`)}</section>`).join(SEP);
+
+/* Sem referências e identificação no menu lateral */
+$("#links").innerHTML=L(SECOES,(s,i)=>`<a href="#${s.id}"><b>${num(i)}</b>${s.menu}</a>`);
+
+/* ===== COMPORTAMENTO: menu, rolagem, destaque da seção, topo ===== */
+const menu=$("#menu"),veu=$("#veu"),bt=$("#burger"),subir=$("#subir"),links=[...document.querySelectorAll("#links a")];
+function abrir(o){menu.classList.toggle("aberto",o);veu.classList.toggle("on",o);bt.setAttribute("aria-expanded",o);}
+bt.onclick=()=>abrir(!menu.classList.contains("aberto"));veu.onclick=()=>abrir(false);
+links.forEach(a=>a.addEventListener("click",()=>abrir(false)));
+addEventListener("keydown",e=>{if(e.key=="Escape")abrir(false);});
+subir.onclick=()=>scrollTo({top:0,behavior:"smooth"});
+const alvos=links.map(a=>document.getElementById(a.getAttribute("href").slice(1)));
+function spy(){
+  const y=scrollY+150,h=document.documentElement.scrollHeight-innerHeight;let k=-1;
+  alvos.forEach((t,i)=>{if(t.getBoundingClientRect().top+scrollY<=y)k=i;});
+  if(scrollY>=h-4)k=alvos.length-1;
+  links.forEach((a,i)=>a.classList.toggle("ativo",i==k));
+  $("#progresso").style.width=(h>0?scrollY/h*100:0)+"%";subir.classList.toggle("on",scrollY>500);
+}
+addEventListener("scroll",spy,{passive:true});spy();
+
+/* ===== AMPLIAR FOTOS (lightbox) ===== */
+const lb=$("#lb"),lbi=lb.querySelector("img"),lbc=$("#lbc");let lista=[],pos=0;
+function mostrar(){const im=lista[pos];lbi.src=im.src;lbi.alt=im.alt;const f=im.closest("figure").querySelector("figcaption");lbc.textContent=f?f.textContent:"";
+  $("#lbp").style.display=$("#lbn").style.display=lista.length>1?"block":"none";}
+function fechar(){lb.classList.remove("on");}
+document.addEventListener("click",e=>{
+  const im=e.target.closest(".moldura img");if(!im)return;
+  const g=im.closest(".galeria")||im.closest(".bloco")||im.closest("figure").parentNode;
+  lista=[...g.querySelectorAll(".moldura img")];pos=lista.indexOf(im);mostrar();lb.classList.add("on");
+});
+const passo=d=>{pos=(pos+d+lista.length)%lista.length;mostrar();};
+$("#lbx").onclick=fechar;$("#lbp").onclick=()=>passo(-1);$("#lbn").onclick=()=>passo(1);
+lb.addEventListener("click",e=>{if(e.target==lb)fechar();});
+addEventListener("keydown",e=>{if(!lb.classList.contains("on"))return;if(e.key=="Escape")fechar();if(e.key=="ArrowLeft")passo(-1);if(e.key=="ArrowRight")passo(1);});
+</script>
+</body>
+</html>
